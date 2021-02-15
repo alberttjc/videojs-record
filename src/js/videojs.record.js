@@ -917,28 +917,49 @@ class Record extends Plugin {
      * Start recording.
      * @private
      */
-    startRecording() {
-        // register starting point
-        this.paused = false;
-        this.pauseTime = this.pausedTime = 0;
-        this.startTime = performance.now();
+    async startRecording() {
 
-        // start countdown
-        const COUNTDOWN_SPEED = 100; // ms
-        this.countDown = this.player.setInterval(
-            this.onCountDown.bind(this), COUNTDOWN_SPEED);
-
-        // cleanup previous recording
-        if (this.engine !== undefined) {
-            this.engine.dispose();
-        }
-
-        // start recording stream
-        this.engine.start();
+        var timer = this.sleep(5000);
 
         // notify UI
         this.player.trigger(Event.START_RECORD);
+
+        if (timer !== undefined) {
+            console.log('Timer started');
+            await timer;
+
+            // register starting point
+            this.paused = false;
+            this.pauseTime = this.pausedTime = 0;
+            this.startTime = performance.now();
+
+            // start countdown
+            const COUNTDOWN_SPEED = 100; // ms
+            this.countDown = this.player.setInterval(
+                this.onCountDown.bind(this), COUNTDOWN_SPEED);
+
+            // cleanup previous recording
+            if (this.engine !== undefined) {
+                this.engine.dispose();
+            }
+
+            // start recording stream
+            this.engine.start();
+        } else {
+            console.log('Timer not working')
+        }
+
     }
+
+    /**
+     * Timer before the recording starts.
+     */
+    sleep(ms) {
+        return new Promise((resolve) => {
+            setTimeout(resolve, ms);
+        })
+    }
+
 
     /**
      * Stop recording.
